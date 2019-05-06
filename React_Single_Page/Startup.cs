@@ -60,6 +60,12 @@ namespace React_Single_Page
             app.UseSession();
 
             app.UseMvcWithDefaultRoute();
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute("api", "api",
+            //        defaults: new { controller = "api", action = "CarAPI" });
+            //    routes.MapRoute("Home", "{controller=Home}/{action=Index}/{id?}");
+            //});
         }
     }
 }

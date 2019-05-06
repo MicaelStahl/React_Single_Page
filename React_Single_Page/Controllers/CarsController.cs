@@ -19,7 +19,12 @@ namespace React_Single_Page.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View(_car.AllCars());
+        }
+
+        public IActionResult AllCars()
+        {
+            return View(_car.AllCars());
         }
 
         [HttpGet]

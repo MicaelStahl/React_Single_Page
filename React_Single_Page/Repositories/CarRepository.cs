@@ -21,7 +21,11 @@ namespace React_Single_Page.Repositories
 
         public List<Car> AllCars()
         {
-            return _db.Cars.Where(x => x.Id == x.Id).ToList();
+            var cars = _db.Cars.Where(x => x.Id == x.Id).ToList();
+
+            return cars;
+
+            //return _db.Cars.Where(x => x.Id == x.Id).ToList();
         }
 
         public Car CreateCar(Car car)
