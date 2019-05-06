@@ -1,0 +1,41 @@
+﻿@model Car
+@{
+    ViewData["Title"] = "Create";
+}
+
+<br />
+<h1 class="offset-2">Create</h1>
+<hr />
+<br />
+
+<form class="offset-2 col-1 marginBottom60" asp-action="Create" asp-controller="Cars" method="post">
+
+    <label asp-for="ModelName"></label>
+    <br />
+    <input asp-for="ModelName" />
+    
+    <hr />
+
+    <label asp-for="Brand"></label>
+    <br />
+    <input asp-for="Brand" />
+
+    <hr />
+
+    <label asp-for="Color"></label>
+    <br />
+    <input asp-for="Color" />
+
+    <hr />
+
+    <label asp-for="ProductionYear"></label>
+    <br />
+    <input asp-for="ProductionYear" value="@DateTime.Now.Year" />
+
+    <hr />
+
+    <input class="btn btn-success" type="submit" value="Submit" />
+
+</form>
+
+<a asp-action="Index" asp-controller="Cars" class="btn btn-primary offset-1 floatLeft">Return</a>

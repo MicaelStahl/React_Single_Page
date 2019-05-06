@@ -1,0 +1,39 @@
+﻿@model Car
+@{
+    ViewData["Title"] = "Details";
+}
+
+<br />
+<h1 class="offset-2">Details</h1>
+<hr />
+<br />
+
+<table class="offset-2 table-active col-8 marginBottom60">
+    <thead>
+        <tr>
+            <th>Model name</th>
+            <th>brand</th>
+            <th>Color</th>
+            <th>Production year</th>
+            <th>Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Model.ModelName</td>
+            <td>@Model.Brand</td>
+            <td>@Model.Color</td>
+            <td>@Model.ProductionYear</td>
+            <td>
+                <a asp-action="Edit" class="btn btn-warning" asp-route-id="@Model.Id">
+                    Edit
+                </a>
+                <a asp-action="Delete" class="btn btn-danger" asp-route-id="@Model.Id">
+                    Delete
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<a asp-action="Index" asp-controller="Cars" class="btn btn-primary offset-2">Return</a>

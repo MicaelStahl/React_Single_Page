@@ -1,0 +1,44 @@
+﻿@model List<Car>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<br />
+<h1 class="offset-2">Index</h1>
+<hr />
+<br />
+
+<table id="tableListOfCars" class="offset-2 table-active marginBottom60 col-8">
+    <thead>
+        <tr>
+            <th>Modelname</th>
+            <th>Brand</th>
+            <th>Color</th>
+            <th>Production Year</th>
+            <th>Options</th>
+        </tr>
+    </thead>
+    <tbody id="carsList" onload="CarsIndex()">
+        @*@if (Model.Count != 0 || Model != null)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ModelName</td>
+                    <td>@item.Brand</td>
+                    <td>@item.ProductionYear</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td>
+                    There's no cars existing in the database right now. Please add some..!
+                </td>
+            </tr>
+        }*@
+    </tbody>
+</table>
+
+<a asp-action="Create" asp-controller="Cars" class="btn btn-success offset-2 floatLeft">Create Car</a>

@@ -1,0 +1,38 @@
+﻿@model Car
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<br />
+<h1 class="offset-2">Delete @Model.ModelName?</h1>
+<hr />
+<br />
+
+<h5 class="offset-2 marginBottom60"> Are you sure you want to delete <strong>@Model.ModelName?</strong></h5>
+<hr />
+<form asp-action="Delete" asp-controller="Cars" asp-route-id="@Model.Id" method="post" class="offset-2 marginBottom60">
+    <table class=" table-active col-8 marginBottom60">
+        <thead>
+            <tr>
+                <th>Model name</th>
+                <th>Brand</th>
+                <th>Color</th>
+                <th>Production year</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.ModelName</td>
+                <td>@Model.Brand</td>
+                <td>@Model.Color</td>
+                <td>@Model.ProductionYear</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <input class="btn btn-danger" type="submit" value="Delete" />
+
+</form>
+
+<a asp-action="Index" asp-controller="Cars" class="offset-2 btn btn-primary">Return</a>
