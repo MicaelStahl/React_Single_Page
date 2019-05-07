@@ -1,13 +1,29 @@
 ﻿import React, { Component } from 'react';
 import axios from 'axios';
 
+const url = 'http://127.0.0.1/api/CarAPI/';
+const testUrl = 'http://localhost:50291/api/CarAPI';
+
+
 export default class Cars extends Component {
     state = {
         data: []
     }
 
     componentDidMount() {
-        axios.get('http://localhost:3000/api/CarAPI')
+        fetch(url)
+            .then(response => {
+                console.log(response);
+                this.setState({ data: response });
+            })
+
+
+        axios.get(testUrl)
+            .then(response => {
+                console.log(response);
+                this.setState({ data: response });
+            })
+        axios.get(url, { responseType: 'text' })
             .then(response => {
                 console.log(response);
                 this.setState({ data: response });

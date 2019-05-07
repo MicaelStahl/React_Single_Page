@@ -59,6 +59,8 @@ namespace React_Single_Page
 
             app.UseSession();
 
+            
+
             app.UseMvcWithDefaultRoute();
             //app.UseMvc(routes =>
             //{

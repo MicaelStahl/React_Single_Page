@@ -15,7 +15,11 @@ $(document).ready(function () {
                     rows += '<td>' + data[i].brand + '</td>';
                     rows += '<td>' + data[i].color + '</td>';
                     rows += '<td>' + data[i].productionYear + '</td>';
-                    rows += '<td><partial name="_EDDButtons" model="' + data + '" /></td>'
+                    rows += '<td>';
+                    rows += '<a href="/Cars/Edit/' + data[i].id + '" class="btn btn-warning">Edit</a>';
+                    rows += '<a href="/Cars/Details/' + data[i].id + '" class="btn btn-primary">Details</a>';
+                    rows += '<a href="/Cars/Delete/' + data[i].id + '" class="btn btn-danger">Delete</a>';
+                    rows += '</td>';
                     rows += '</tr>';
                 }
                 $('#carsList').append(rows);

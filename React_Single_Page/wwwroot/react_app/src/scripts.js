@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 
 //const AllCars = () => {
 //    const rows = axios.get('JSON/GetCars',
