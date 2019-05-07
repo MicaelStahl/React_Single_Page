@@ -42,6 +42,15 @@ namespace React_Single_Page
                 options.Cookie.IsEssential = true;
             });
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins("*");
+                    });
+            });
+
             services.AddMvc();
         }
 
@@ -59,7 +68,7 @@ namespace React_Single_Page
 
             app.UseSession();
 
-            
+            app.UseCors();
 
             app.UseMvcWithDefaultRoute();
             //app.UseMvc(routes =>
