@@ -4,7 +4,7 @@ const AllCarsTableList = props => {
 
     console.log(props);
 
-    const rows = props.carData.map((car) => {
+    const rows = props.carData.map((car, index) => {
 
         return (
             <tr key={car.id} className="row">
