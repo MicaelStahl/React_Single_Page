@@ -2,31 +2,34 @@
 
 const AllCarsTableList = props => {
 
-    console.log(props);
+    const rows = props.carData.map((car, index) =>
+        <tr key={car.id} className="col-12">
+            <td>{car.modelName}</td>
+            <td>{car.brand}</td>
+            <td>{car.color}</td>
+            <td>{car.productionYear}</td>
+            <td>
+                <button onClick={() => props.onUpdate(car.id)} className="btn btn-warning btn-sm m-1">Edit</button>
+                <button onClick={() => props.onRead(car.id)} className="btn btn-primary btn-sm m-1">Details</button>
+                <button onClick={() => props.onDelete(car.id)} className="btn btn-danger btn-sm m-1">Delete</button>
+            </td>
+        </tr>
+    )
 
-    const rows = props.carData.map((car, index) => {
-
-        return (
-            <tr key={car.id} className="row">
-                <td>{car.modelName}</td>
-                <td>{car.brand}</td>
-                <td>{car.color}</td>
-                <td>{car.productionYear}</td>
-            </tr>
-        )
-    })
-
-    return {rows}
+    return <tbody>{rows}</tbody>
 }
 
 const AllCarsTableName = () => {
     return (
-        <tr className="row">
-            <th>Model</th>
-            <th>Brand</th>
-            <th>Color</th>
-            <th>ProductionYear</th>
-        </tr>
+        <thead>
+            <tr className="col-12">
+                <th>Model</th>
+                <th>Brand</th>
+                <th>Color</th>
+                <th>ProductionYear</th>
+                <th>Options</th>
+            </tr>
+        </thead>
     )
 }
 
@@ -34,15 +37,16 @@ export default class Cars extends Component {
 
     render() {
 
-        const { carData } = this.props
-        console.log(carData + ' hello, its me!');
+        const { carData, onUpdate, onRead, onDelete } = this.props
 
         return (
             <table>
-                <tbody>
-                    <AllCarsTableName />
-                    <AllCarsTableList carData={carData} />
-                </tbody>
+                <AllCarsTableName />
+                <AllCarsTableList onUpdate={onUpdate}
+                    onRead={onRead}
+                    onDelete={onDelete}
+                    carData={carData}
+                />
             </table>
         )
     }

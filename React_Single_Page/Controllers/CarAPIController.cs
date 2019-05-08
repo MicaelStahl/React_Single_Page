@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using React_Single_Page.Database;
+using React_Single_Page.Interfaces;
 using React_Single_Page.Models;
 
 namespace React_Single_Page.Controllers
@@ -15,10 +16,12 @@ namespace React_Single_Page.Controllers
     [EnableCors]
     public class CarAPIController : ControllerBase
     {
-        CarDbContext _db;
+        private readonly ICarRepository _car;
+        private readonly CarDbContext _db;
 
-        public CarAPIController(CarDbContext db)
+        public CarAPIController(ICarRepository car, CarDbContext db)
         {
+            _car = car;
             _db = db;
         }
 
@@ -52,8 +55,17 @@ namespace React_Single_Page.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(int? id)
         {
+            if (id != null || id != 0)
+            {
+                var car = _db.Cars.SingleOrDefault(x => x.Id == id);
+
+                _db.Cars.Remove(car);
+                _db.SaveChanges();
+
+                _car.DeleteCar(id);
+            }
         }
     }
 }

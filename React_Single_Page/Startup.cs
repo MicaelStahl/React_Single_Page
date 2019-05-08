@@ -47,7 +47,9 @@ namespace React_Single_Page
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("*");
+                        builder.WithOrigins("*")
+                       .AllowAnyHeader()
+                       .AllowAnyMethod();
                     });
             });
 
