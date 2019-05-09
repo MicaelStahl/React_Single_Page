@@ -46,7 +46,7 @@ namespace React_Single_Page
             {
                 options.AddDefaultPolicy(
                     builder =>
-                    {
+                    { // A * simply indicates it's open for all. This is ONLY the solution for developer code.
                         builder.WithOrigins("*")
                        .AllowAnyHeader()
                        .AllowAnyMethod();

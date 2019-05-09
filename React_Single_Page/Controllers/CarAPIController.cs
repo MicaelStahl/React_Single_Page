@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using React_Single_Page.Database;
 using React_Single_Page.Interfaces;
 using React_Single_Page.Models;
+using React_Single_Page.ViewModels;
 
 namespace React_Single_Page.Controllers
 {
@@ -41,10 +43,46 @@ namespace React_Single_Page.Controllers
             return "value";
         }
 
+        // GET: api/CarAPI/GetBrands
+        [HttpGet("{Car}")]
+        public List<string> GetBrands()
+        {
+            var brands = new List<string>();
+
+            foreach (var item in _db.Cars)
+            {
+                brands.Add(item.Brand);
+            }
+
+            if (brands != null)
+            {
+                return brands;
+            }
+            return null;
+        }
+
         // POST: api/CarAPI
         [HttpPost]
-        public void Post([FromBody] string value)
+        public CreateCarVM Post([FromBody] Car car)
         {
+            CreateCarVM newCar = new CreateCarVM();
+            if (ModelState.IsValid)
+            {
+
+                var response = _car.CreateCar(car);
+
+                newCar.Car = response;
+
+                if (newCar.Car != null)
+                {
+                    newCar.Message = "Your car was successfully created!";
+                    return newCar;
+                }
+                newCar.Message = "There was an error when creating the car. please try again.";
+                return newCar;
+            }
+            newCar.Message = "Please fill in all inputs and try again.";
+            return newCar;
         }
 
         // PUT: api/CarAPI/5
