@@ -1,12 +1,28 @@
 import React, { Component } from "react";
-import "./site.css";
 
-const CreateCarForm = props => {
-  //   const year = new Date().getFullYear();
+class EditCarForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      oneCar: this.props.oneCar,
+      modelName: "",
+      brand: "",
+      color: "",
+      productionYear: ""
+    };
+  }
 
-  const { brands, onCreate, onChange } = props;
+  handleChange = event => {
+    const { name, value } = event.target;
 
-  if (brands.length > 0) {
+    this.setState({
+      [name]: value
+    });
+  };
+  //Continue here.
+  render() {
+    const { oneCar, brands, onChange, onCreate, onReturn } = this.props;
+    const { modelName, color, brand, productionYear } = oneCar;
     return (
       <div className="container col-2 AlignCenter">
         <hr />
@@ -16,6 +32,8 @@ const CreateCarForm = props => {
           <input
             name="modelName"
             type="text"
+            onChange={this.handleChange}
+            value={modelName}
             placeholder="Car-model"
             required
           />
@@ -23,7 +41,7 @@ const CreateCarForm = props => {
           <label>Brand</label>
           <br />
           <select onChange={onChange}>
-            <option value="Select one">Select one</option>
+            <option value={brand}>{brand}</option>
             {brands.map((brand, index) => (
               <option name="brand" key={index}>
                 {brand}
@@ -33,14 +51,22 @@ const CreateCarForm = props => {
           <hr />
           <label>Color</label>
           <br />
-          <input name="color" type="text" placeholder="Car-color" required />
+          <input
+            name="color"
+            value={color}
+            onChange={this.handleChange}
+            type="text"
+            placeholder="Car-color"
+            required
+          />
           <hr />
           <label>ProductionYear</label>
           <br />
           <input
             name="productionYear"
             type="datetime"
-            // value={year}
+            value={productionYear}
+            onChange={this.handleChange}
             placeholder="Production-Year"
             required
           />
@@ -51,17 +77,15 @@ const CreateCarForm = props => {
             className="btn btn-success btn-sm"
           />
         </form>
-      </div>
-    );
-  } else {
-    return (
-      <div className="container AlignCenter">
-        <p className="errorMessage">
-          Something went wrong. Please try again later.
-        </p>
+        <button
+          onClick={() => onReturn()}
+          className="btn btn-primary btn-sm offset-2"
+        >
+          Return
+        </button>
       </div>
     );
   }
-};
+}
 
-export default CreateCarForm;
+export default EditCarForm;

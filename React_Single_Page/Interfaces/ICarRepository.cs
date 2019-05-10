@@ -9,7 +9,7 @@ namespace React_Single_Page.Interfaces
     public interface ICarRepository
     {
         // (C)RUD
-        Car CreateCar(Car car);
+        bool CreateCar(Car car);
 
         // C(R)UD
         Car FindCar(int? id);

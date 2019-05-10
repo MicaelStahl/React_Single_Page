@@ -4,33 +4,35 @@ import axios from "axios";
 import AllCars from "./AllCars";
 import "./Components/site.css";
 import CreateCarForm from "./Components/CreateCarForm";
+import DetailsCarTable from "./Components/DetailsCarTable";
+import EditCarForm from "./Components/EditCarForm";
 
-const url = "http://localhost:50291/api/CarAPI";
+const url = "http://localhost:50291/api/CarAPI/";
 
 class App extends Component {
   state = {
     cars: [],
     createCar: false,
+    detailsCar: false,
+    editCar: false,
+    deleteCar: false,
+    oneCar: [],
     brands: [],
-    brand: "",
-    carMsg: null
+    brand: ""
   };
 
   //This one should be it's own individual button.
   handleCreate = () => {
     console.log("handleCreate called");
 
-    axios.get("http://localhost:50291/api/CarAPI/GetBrands").then(response => {
-      console.log(response.data);
-      console.log(this.state.createCar);
+    console.log(this.state.createCar);
 
-      let createCar = this.state;
+    let createCar = this.state;
 
-      createCar = true;
+    createCar = true;
 
-      this.setState({ createCar, brands: response.data });
-      console.log(this.state.createCar);
-    });
+    this.setState({ createCar });
+    console.log(this.state.createCar);
   };
 
   handleChange = event => {
@@ -39,49 +41,68 @@ class App extends Component {
 
   // This is the "post" version of Create.
   handleCreateComplete = event => {
-    const cars = this.state.cars;
     event.preventDefault();
     const target = event.target;
-    const brand = this.state.brand;
 
-    console.log(target.modelName.value);
-    console.log(target.color.value);
-    console.log(target.productionYear.value);
-    console.log(brand);
+    const car = {
+      ModelName: target.modelName.value,
+      Brand: this.state.brand,
+      Color: target.color.value,
+      ProductionYear: target.productionYear.value
+    };
 
-    let value = target.modelName.value;
-    value += brand;
-    value += target.color.value;
-    value += target.productionYear.value;
+    console.log(car);
 
-    console.log(value);
     axios
-      .post("http://localhost:50291/api/CarAPI", event.target.value)
+      .post(url, car)
       .then(response => {
-        cars.push(response.Car);
-        this.setState({ cars, carMsg: response.Message });
+        console.log(response);
+        this.setState({ cars: response.data, createCar: false });
+      })
+      .catch(status => {
+        alert(status);
       });
   };
 
-  handleRead = () => {
-    console.log("handleRead called");
+  handleDetails = car => {
+    console.log("handleDetails called");
+    this.setState({ oneCar: car, detailsCar: true });
   };
 
-  handleUpdate = () => {
-    console.log("handleUpdate called");
+  handleEdit = car => {
+    console.log("handleEdit called");
+    console.log(car);
+    console.log(this.state.createCar);
+    this.setState({ oneCar: car, editCar: true });
   };
 
   handleDelete = id => {
     axios
-      .delete("http://localhost:50291/api/CarAPI/" + id)
+      .delete(url + id)
       .then(response => {
+        let detailsCar = this.state;
+        detailsCar = false;
+
         const cars = this.state.cars.filter(x => x.id !== id);
-        this.setState({ cars });
+        this.setState({ cars, detailsCar });
       })
       .catch(error => {
         console.log(error);
         return <p>Something went wrong. Please try again.</p>;
       });
+  };
+
+  handleReturn = () => {
+    axios.get(url, { "Content-Type": "application/json" }).then(response => {
+      this.setState({
+        cars: response.data,
+        createCar: false,
+        detailsCar: false,
+        editCar: false,
+        deleteCar: false,
+        oneCar: []
+      });
+    });
   };
 
   componentDidMount() {
@@ -93,10 +114,13 @@ class App extends Component {
       .catch(status => {
         console.log(status);
       });
+    axios.get("http://localhost:50291/api/CarAPI/GetBrands").then(response => {
+      this.setState({ brands: response.data });
+    });
   }
 
   render() {
-    const { cars, brands, createCar } = this.state;
+    const { cars, brands, createCar, oneCar, detailsCar, editCar } = this.state;
 
     if (cars.length > 0) {
       if (createCar === true) {
@@ -108,14 +132,35 @@ class App extends Component {
           />
         );
       }
+      if (detailsCar === true) {
+        return (
+          <DetailsCarTable
+            oneCar={oneCar}
+            onEdit={this.handleEdit}
+            onDelete={this.handleDelete}
+            onReturn={this.handleReturn}
+          />
+        );
+      }
+      if (editCar === true) {
+        return (
+          <EditCarForm
+            oneCar={oneCar}
+            brands={brands}
+            onChange={this.handleChange}
+            onCreate={this.handleCreateComplete}
+            onReturn={this.handleReturn}
+          />
+        );
+      }
 
       return (
         <div className="App">
-          <h1>Hello :)</h1>
+          <h1>Hello!</h1>
           <AllCars
             carData={cars}
-            onUpdate={this.handleUpdate}
-            onRead={this.handleRead}
+            onEdit={this.handleEdit}
+            onDetails={this.handleDetails}
             onDelete={this.handleDelete}
           />
           <button
@@ -128,7 +173,7 @@ class App extends Component {
       );
     } else {
       return (
-        <div>
+        <div className="container App errorMessage">
           <h2>
             Something went wrong when trying to reach the server. Try again
             later.

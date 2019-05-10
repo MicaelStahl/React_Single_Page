@@ -36,22 +36,15 @@ namespace React_Single_Page.Controllers
             return new List<Car>(cars);
         }
 
-        // GET: api/CarAPI/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
         // GET: api/CarAPI/GetBrands
         [HttpGet("{Car}")]
         public List<string> GetBrands()
         {
             var brands = new List<string>();
 
-            foreach (var item in _db.Cars)
+            foreach (var item in _db.Brands)
             {
-                brands.Add(item.Brand);
+                brands.Add(item.Name);
             }
 
             if (brands != null)
@@ -63,30 +56,22 @@ namespace React_Single_Page.Controllers
 
         // POST: api/CarAPI
         [HttpPost]
-        public CreateCarVM Post([FromBody] Car car)
+        public List<Car> Post(Car car)
         {
-            CreateCarVM newCar = new CreateCarVM();
             if (ModelState.IsValid)
             {
+                var boolean = _car.CreateCar(car);
 
-                var response = _car.CreateCar(car);
-
-                newCar.Car = response;
-
-                if (newCar.Car != null)
+                if (boolean)
                 {
-                    newCar.Message = "Your car was successfully created!";
-                    return newCar;
+                    return _db.Cars.ToList();
                 }
-                newCar.Message = "There was an error when creating the car. please try again.";
-                return newCar;
             }
-            newCar.Message = "Please fill in all inputs and try again.";
-            return newCar;
+            return null;
         }
 
         // PUT: api/CarAPI/5
-        [HttpPut("{id}")]
+        [HttpPut("{id}")] //Another word for Edit.
         public void Put(int id, [FromBody] string value)
         {
         }

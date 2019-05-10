@@ -12,5 +12,6 @@ namespace React_Single_Page.Database
         public CarDbContext(DbContextOptions<CarDbContext> options) : base(options) { }
 
         public DbSet<Car> Cars { get; set; }
+        public DbSet<Brand> Brands { get; set; }
     }
 }

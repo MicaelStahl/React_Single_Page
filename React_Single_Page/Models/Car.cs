@@ -28,7 +28,8 @@ namespace React_Single_Page.Models
 
         [Required]
         [Display(Name = "Production year")]
-        [Range(1900, 2019, ErrorMessage = "The production year must be between year 1900 and 2019")]
+        [Range(1900, 2020, ErrorMessage = "The production year must be between year 1900 and 2019")]
         public int ProductionYear { get; set; }
     }
+
 }

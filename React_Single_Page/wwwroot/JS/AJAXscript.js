@@ -12,8 +12,9 @@ $(document).ready(function () {
                 for (var i = 0; i < data.length; i++) {
                     rows += '<tr class="table-row">';
                     rows += '<td>' + data[i].modelName + '</td>';
-                    rows += '<td>' + data[i].brand + '</td>';
+                    rows += '<td>' + data[i].brand.name + '</td>';
                     rows += '<td>' + data[i].color + '</td>';
+                    console.log(data[i].brand.name);
                     rows += '<td>' + data[i].productionYear + '</td>';
                     rows += '<td>';
                     rows += '<a href="/Cars/Edit/' + data[i].id + '" class="btn btn-warning">Edit</a>';

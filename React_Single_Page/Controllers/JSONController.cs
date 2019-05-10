@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using React_Single_Page.Database;
 using React_Single_Page.Models;
 
@@ -25,7 +26,8 @@ namespace React_Single_Page.Controllers
         [HttpGet]
         public IActionResult GetCars()
         {
-            var cars = _db.Cars.ToList();
+            var cars = _db.Cars
+                .ToList();
 
             return Json(cars);
         }

@@ -1,4 +1,5 @@
-﻿using React_Single_Page.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using React_Single_Page.Database;
 using React_Single_Page.Interfaces;
 using React_Single_Page.Models;
 using System;
@@ -12,7 +13,7 @@ namespace React_Single_Page.Repositories
     {
         private readonly CarDbContext _db;
 
-        private readonly int Year = DateTime.Now.Year;
+        private readonly int Year = DateTime.Now.Year + 1;
 
         public CarRepository(CarDbContext db)
         {
@@ -21,14 +22,15 @@ namespace React_Single_Page.Repositories
 
         public List<Car> AllCars()
         {
-            var cars = _db.Cars.Where(x => x.Id == x.Id).ToList();
+            var cars = _db.Cars
+                .ToList();
 
             return cars;
 
             //return _db.Cars.Where(x => x.Id == x.Id).ToList();
         }
 
-        public Car CreateCar(Car car)
+        public bool CreateCar(Car car)
         {
             if (!string.IsNullOrWhiteSpace(car.ModelName) ||
                 !string.IsNullOrWhiteSpace(car.Brand) ||
@@ -49,10 +51,10 @@ namespace React_Single_Page.Repositories
 
                     _db.SaveChanges();
 
-                    return newCar;
+                    return true;
                 }
             }
-            return null;
+            return false;
         }
 
         public bool DeleteCar(int? id)
@@ -117,7 +119,7 @@ namespace React_Single_Page.Repositories
             {
                 if (sortBy.Contains("ModelName"))
                 {
-                    var sortedCars = _db.Cars.Where(x => x.Id == x.Id).ToList();
+                    var sortedCars = _db.Cars.ToList();
 
                     // Work on this later. I don't know how to configure this one.
                 }

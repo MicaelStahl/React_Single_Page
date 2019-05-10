@@ -32,20 +32,20 @@ namespace React_Single_Page.Controllers
         {
             return View();
         }
-        [HttpPost]
-        public IActionResult Create(Car car)
-        {
-            if (ModelState.IsValid)
-            {
-                var newCar = _car.CreateCar(car);
+        //[HttpPost]
+        //public IActionResult Create(Car car)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var newCar = _car.CreateCar(car);
 
-                if (newCar != null)
-                {
-                    return RedirectToAction(nameof(Details), "Cars", new { id = newCar.Id });
-                }
-            }
-            return BadRequest();
-        }
+        //        if (newCar != null)
+        //        {
+        //            return RedirectToAction(nameof(Details), "Cars", new { id = newCar.Id });
+        //        }
+        //    }
+        //    return BadRequest();
+        //}
 
         public IActionResult Details(int? id)
         {

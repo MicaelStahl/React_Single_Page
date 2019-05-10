@@ -2,7 +2,9 @@
 import "./Components/site.css";
 
 const AllCarsTableList = props => {
-  const rows = props.carData.map((car, index) => (
+  const { carData, onEdit, onDetails, onDelete } = props;
+
+  const rows = carData.map((car, index) => (
     <tr key={car.id} className="col-12">
       <td>{car.modelName}</td>
       <td>{car.brand}</td>
@@ -10,19 +12,19 @@ const AllCarsTableList = props => {
       <td>{car.productionYear}</td>
       <td>
         <button
-          onClick={() => props.onUpdate(car.id)}
+          onClick={() => onEdit(car)}
           className="btn btn-warning btn-sm m-1"
         >
           Edit
         </button>
         <button
-          onClick={() => props.onRead(car.id)}
+          onClick={() => onDetails(car)}
           className="btn btn-primary btn-sm m-1"
         >
           Details
         </button>
         <button
-          onClick={() => props.onDelete(car.id)}
+          onClick={() => onDelete(car.id)}
           className="btn btn-danger btn-sm m-1"
         >
           Delete
@@ -50,14 +52,14 @@ const AllCarsTableName = () => {
 
 export default class Cars extends Component {
   render() {
-    const { carData, onUpdate, onRead, onDelete } = this.props;
+    const { carData, onEdit, onDetails, onDelete } = this.props;
 
     return (
-      <table className="marginBottom60">
+      <table className="marginBottom60 AlignCenter">
         <AllCarsTableName />
         <AllCarsTableList
-          onUpdate={onUpdate}
-          onRead={onRead}
+          onEdit={onEdit}
+          onDetails={onDetails}
           onDelete={onDelete}
           carData={carData}
         />
