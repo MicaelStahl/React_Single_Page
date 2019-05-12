@@ -72,8 +72,23 @@ namespace React_Single_Page.Controllers
 
         // PUT: api/CarAPI/5
         [HttpPut("{id}")] //Another word for Edit.
-        public void Put(int id, [FromBody] string value)
+        public Car Put(int? id, Car car)
         {
+            if (ModelState.IsValid)
+            {
+                if (id != null || id != 0)
+                {
+                    car.Id = (int)id;
+
+                    var newCar = _car.EditCar(car);
+
+                    if (newCar != null)
+                    {
+                        return newCar;
+                    }
+                }
+            }
+            return null;
         }
 
         // DELETE: api/ApiWithActions/5

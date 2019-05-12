@@ -10,6 +10,7 @@ namespace React_Single_Page.Models
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         [Display(Name = "Brand")]
         public string Name { get; set; }
