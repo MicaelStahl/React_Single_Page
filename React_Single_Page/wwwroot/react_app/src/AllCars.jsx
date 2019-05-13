@@ -36,14 +36,28 @@ const AllCarsTableList = props => {
   return <tbody>{rows}</tbody>;
 };
 
-const AllCarsTableName = () => {
+const AllCarsTableName = props => {
+  const { onSort, carData } = props;
+  const { productionYear } = carData;
   return (
     <thead>
       <tr className="col-12">
-        <th>Model</th>
-        <th>Brand</th>
-        <th>Color</th>
-        <th>ProductionYear</th>
+        <th
+          name="modelName"
+          value="modelName"
+          onClick={() => onSort("modelName")}
+        >
+          Model
+        </th>
+        <th name="brand" onClick={() => onSort("brand")}>
+          Brand
+        </th>
+        <th name="color" onClick={() => onSort("color")}>
+          Color
+        </th>
+        <th name="productionYear" onClick={() => onSort("productionYear")}>
+          ProductionYear
+        </th>
         <th>Options</th>
       </tr>
     </thead>
@@ -52,11 +66,11 @@ const AllCarsTableName = () => {
 
 export default class Cars extends Component {
   render() {
-    const { carData, onEdit, onDetails, onDelete } = this.props;
+    const { carData, onEdit, onDetails, onDelete, onSort } = this.props;
 
     return (
       <table className="marginBottom60 AlignCenter">
-        <AllCarsTableName />
+        <AllCarsTableName onSort={onSort} carData={carData} />
         <AllCarsTableList
           onEdit={onEdit}
           onDetails={onDetails}

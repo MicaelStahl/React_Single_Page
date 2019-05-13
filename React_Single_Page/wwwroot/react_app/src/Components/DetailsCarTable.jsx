@@ -23,7 +23,7 @@ const DetailsCarTable = props => {
           <td>{oneCar.productionYear}</td>
           <td>
             <button
-              onClick={() => onEdit(oneCar.id)}
+              onClick={() => onEdit(oneCar)}
               className="btn btn-warning btn-sm m-1"
             >
               Edit

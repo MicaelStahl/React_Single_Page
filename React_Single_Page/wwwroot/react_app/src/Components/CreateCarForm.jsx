@@ -1,16 +1,17 @@
 import React from "react";
 import "./site.css";
+import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from "constants";
 
 const CreateCarForm = props => {
   //   const year = new Date().getFullYear();
-
-  const { brands, onCreate, onChange } = props;
+  // If I want to use the line above, then I have to include a handleChange method.
+  const { brands, onCreate, onChange, onReturn } = props;
 
   if (brands.length > 0) {
     return (
       <div className="container col-2 AlignCenter">
         <hr />
-        <form onSubmit={onCreate}>
+        <form className="marginBottom60" onSubmit={onCreate}>
           <label>Model</label>
           <br />
           <input
@@ -51,6 +52,12 @@ const CreateCarForm = props => {
             className="btn btn-success btn-sm"
           />
         </form>
+        <button
+          onClick={() => onReturn()}
+          className="btn btn-primary btn-sm offset-2"
+        >
+          Return
+        </button>
       </div>
     );
   } else {
