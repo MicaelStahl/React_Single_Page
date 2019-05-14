@@ -7,6 +7,7 @@ import CreateCarForm from "./Components/CreateCarForm";
 import DetailsCarTable from "./Components/DetailsCarTable";
 import EditCarForm from "./Components/EditCarForm";
 import SortCarTable from "./Components/SortCarTable";
+import DeleteCarConfirm from "./Components/DeleteCarConfirm";
 
 const url = "http://localhost:50291/api/CarAPI/";
 
@@ -17,6 +18,8 @@ class App extends Component {
     detailsCar: false,
     editCar: false,
     deleteCar: false,
+    ascending: true,
+    descending: false,
     sortCars: "",
     oneCar: [],
     brands: [],
@@ -32,15 +35,24 @@ class App extends Component {
 
   handleChange = event => {
     const { name, value } = event.target;
+    console.log("handleChange called");
 
-    this.setState({
-      [name]: value
-    });
+    this.setState({ [name]: value });
+  };
+
+  // This one is specifically for brand while creating.
+  // Can't get it to work with handleChange. :(
+  handleBrand = event => {
+    const { value } = event.target;
+    console.log("handleBrand called");
+
+    this.setState({ brand: value });
   };
 
   // This is the "post" version of Create.
   handleCreateComplete = event => {
     event.preventDefault();
+    console.log("handleCreateComplete called");
     const target = event.target;
 
     const car = {
@@ -50,12 +62,9 @@ class App extends Component {
       ProductionYear: target.productionYear.value
     };
 
-    console.log(car);
-
     axios
       .post(url, car)
       .then(response => {
-        console.log(response);
         this.setState({ cars: response.data, createCar: false });
       })
       .catch(status => {
@@ -74,9 +83,16 @@ class App extends Component {
     this.setState({ oneCar: car, editCar: true, detailsCar: false });
   };
 
+  handleDelete = () => {
+    console.log("handleDelete called");
+
+    this.setState({ deleteCar: true });
+  };
+
   // If I want to make a "failsafe" for delete,
   // then make this into a different page instead.
-  handleDelete = id => {
+  handleDeleteConfirm = id => {
+    console.log("handleDeleteConfirm called");
     axios
       .delete(url + id)
       .then(response => {
@@ -84,7 +100,7 @@ class App extends Component {
         detailsCar = false;
 
         const cars = this.state.cars.filter(x => x.id !== id);
-        this.setState({ cars, detailsCar });
+        this.setState({ cars, detailsCar, deleteCar: false });
       })
       .catch(error => {
         console.log(error);
@@ -93,9 +109,15 @@ class App extends Component {
   };
 
   handleSort = event => {
-    console.log(event);
     console.log("handleSort called");
+    // let { ascending, descending } = this.state;
 
+    // if (ascending === true) {
+    //   this.setState({ ascending: false, descending: false });
+    // } else if (ascending === false) {
+    //   this.setState({ ascending: true, descending: true });
+    // }
+    // console.log(ascending + " + " + descending);
     this.setState({ sortCars: [event] });
   };
 
@@ -106,6 +128,8 @@ class App extends Component {
         createCar: false,
         detailsCar: false,
         editCar: false,
+        ascending: true,
+        descending: false,
         deleteCar: false,
         oneCar: [],
         brands: [],
@@ -137,14 +161,16 @@ class App extends Component {
       oneCar,
       detailsCar,
       editCar,
-      sortCars
+      descending,
+      sortCars,
+      deleteCar
     } = this.state;
 
     if (cars.length > 0) {
       if (createCar === true) {
         return (
           <CreateCarForm
-            onChange={this.handleChange}
+            onChange={this.handleBrand}
             onCreate={this.handleCreateComplete}
             onReturn={this.handleReturn}
             brands={brands}
@@ -156,7 +182,7 @@ class App extends Component {
           <DetailsCarTable
             oneCar={oneCar}
             onEdit={this.handleEdit}
-            onDelete={this.handleDelete}
+            onDelete={this.handleDeleteConfirm}
             onReturn={this.handleReturn}
           />
         );
@@ -171,6 +197,19 @@ class App extends Component {
           />
         );
       }
+
+      if (deleteCar === true) {
+        return (
+          <div classname="App">
+            <DeleteCarConfirm
+              oneCar={oneCar}
+              onReturn={onReturn}
+              handleDeleteConfirm={this.handleDeleteConfirm}
+            />
+          </div>
+        );
+      }
+
       if (sortCars !== "") {
         return (
           <div className="App">
@@ -179,9 +218,10 @@ class App extends Component {
               cars={cars}
               onEdit={this.handleEdit}
               onDetails={this.handleDetails}
-              onDelete={this.handleDelete}
+              onDelete={this.handleDeleteConfirm}
               onSort={this.handleSort}
               sortCars={sortCars}
+              descending={descending}
             />
             <button
               className="btn btn-primary btn-sm"
@@ -200,7 +240,7 @@ class App extends Component {
             carData={cars}
             onEdit={this.handleEdit}
             onDetails={this.handleDetails}
-            onDelete={this.handleDelete}
+            onDelete={this.handleDeleteConfirm}
             onSort={this.handleSort}
           />
           <button

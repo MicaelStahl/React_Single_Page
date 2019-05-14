@@ -1,6 +1,5 @@
 import React from "react";
 import "./site.css";
-import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from "constants";
 
 const CreateCarForm = props => {
   //   const year = new Date().getFullYear();
