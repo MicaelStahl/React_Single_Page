@@ -38,7 +38,7 @@ namespace React_Single_Page.Controllers
 
         // GET: api/CarAPI/GetBrands
         [HttpGet("{Car}")]
-        public List<string> GetBrands()
+        public IEnumerable<string> GetBrands()
         {
             var brands = new List<string>();
 
