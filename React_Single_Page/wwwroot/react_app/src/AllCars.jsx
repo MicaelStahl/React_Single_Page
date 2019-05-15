@@ -66,10 +66,22 @@ const AllCarsTableName = props => {
 
 export default class Cars extends Component {
   render() {
-    const { carData, onEdit, onDetails, onDelete, onSort } = this.props;
+    const {
+      carData,
+      onEdit,
+      onDetails,
+      onDelete,
+      onSort,
+      allCarsStyling
+    } = this.props;
+
+    const { center, marginBottom, float } = allCarsStyling;
+    let style = center + " " + marginBottom + " " + float;
+
+    console.log(center);
 
     return (
-      <table className="marginBottom60 AlignCenter">
+      <table className={style}>
         <AllCarsTableName onSort={onSort} carData={carData} />
         <AllCarsTableList
           onEdit={onEdit}

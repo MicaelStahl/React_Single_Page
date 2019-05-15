@@ -132,7 +132,6 @@ class App extends Component {
         descending: false,
         deleteCar: false,
         oneCar: [],
-        brands: [],
         brand: "",
         sortCars: ""
       });
@@ -166,6 +165,15 @@ class App extends Component {
       deleteCar
     } = this.state;
 
+    let allCarsStyling = {
+      center: "AlignCenter",
+      marginBottom: "marginBottom60"
+    };
+    let detailsStyling = {
+      center: "AlignCenter",
+      marginBottom: "marginBottom60"
+    };
+
     if (cars.length > 0) {
       if (createCar === true) {
         return (
@@ -178,23 +186,90 @@ class App extends Component {
         );
       }
       if (detailsCar === true) {
+        if (window.innerWidth > 1100) {
+          allCarsStyling = {
+            // float: "floatLeft",
+            AlignCenter: "",
+            marginBottom: "marginBottom60"
+          };
+
+          const detailsStyling = {
+            // float: "floatRight",
+            AlignCenter: "",
+            marginBottom: "marginBottom60"
+          };
+
+          return (
+            <div className="row resetRow">
+              <div className="offset-1 col-5">
+                <h1 className="marginBottom30">All Cars!</h1>
+                <AllCars
+                  allCarsStyling={allCarsStyling}
+                  carData={cars}
+                  onEdit={this.handleEdit}
+                  onDetails={this.handleDetails}
+                  onDelete={this.handleDeleteConfirm}
+                  onSort={this.handleSort}
+                />
+              </div>
+              <div className="col-5 marginLeft30">
+                <h1 className="marginBottom30">
+                  Details of {oneCar.modelName}
+                </h1>
+                <DetailsCarTable
+                  detailsStyling={detailsStyling}
+                  oneCar={oneCar}
+                  onEdit={this.handleEdit}
+                  onDelete={this.handleDeleteConfirm}
+                  onReturn={this.handleReturn}
+                />
+              </div>
+              <div className="AlignCenter clearFloats">
+                <button
+                  className="btn btn-primary btn-sm marginBottom5"
+                  onClick={this.handleCreate}
+                >
+                  Create Car
+                </button>
+                <button
+                  className="btn btn-primary btn-sm offset-1"
+                  onClick={this.handleReturn}
+                >
+                  Return
+                </button>
+              </div>
+            </div>
+          );
+        }
         return (
-          <DetailsCarTable
-            oneCar={oneCar}
-            onEdit={this.handleEdit}
-            onDelete={this.handleDeleteConfirm}
-            onReturn={this.handleReturn}
-          />
+          <div>
+            <h1>Details of {oneCar.modelName}</h1>
+            <hr className="col-6" />
+            <DetailsCarTable
+              detailsStyling={detailsStyling}
+              oneCar={oneCar}
+              onEdit={this.handleEdit}
+              onDelete={this.handleDeleteConfirm}
+            />
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={this.handleReturn}
+            >
+              Return
+            </button>
+          </div>
         );
       }
       if (editCar === true) {
         return (
-          <EditCarForm
-            oneCar={oneCar}
-            brands={brands}
-            onCreate={this.handleCreateComplete}
-            onReturn={this.handleReturn}
-          />
+          <div>
+            <EditCarForm
+              oneCar={oneCar}
+              brands={brands}
+              onCreate={this.handleCreateComplete}
+              onReturn={this.handleReturn}
+            />
+          </div>
         );
       }
 
@@ -203,7 +278,7 @@ class App extends Component {
           <div classname="App">
             <DeleteCarConfirm
               oneCar={oneCar}
-              onReturn={onReturn}
+              onReturn={this.handleReturn}
               handleDeleteConfirm={this.handleDeleteConfirm}
             />
           </div>
@@ -213,7 +288,7 @@ class App extends Component {
       if (sortCars !== "") {
         return (
           <div className="App">
-            <h1>Hello!</h1>
+            <h1>Sorted by {sortCars}!</h1>
             <SortCarTable
               cars={cars}
               onEdit={this.handleEdit}
@@ -224,19 +299,28 @@ class App extends Component {
               descending={descending}
             />
             <button
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary btn-sm marginBottom5"
               onClick={this.handleCreate}
             >
               Create Car
             </button>
+            <div>
+              <button
+                className="btn btn-primary btn-sm "
+                onClick={this.handleReturn}
+              >
+                Reset Sort
+              </button>
+            </div>
           </div>
         );
       }
 
       return (
         <div className="App">
-          <h1>Hello!</h1>
+          <h1>All Cars!</h1>
           <AllCars
+            allCarsStyling={allCarsStyling}
             carData={cars}
             onEdit={this.handleEdit}
             onDetails={this.handleDetails}
