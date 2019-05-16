@@ -4,12 +4,14 @@ import "./site.css";
 const CreateCarForm = props => {
   //   const year = new Date().getFullYear();
   // If I want to use the line above, then I have to include a handleChange method.
-  const { brands, onCreate, onChange, onReturn } = props;
+  const { brands, onCreate, onChange, onReturn, errorMsg } = props;
 
+  console.log(errorMsg);
   if (brands.length > 0) {
     return (
-      <div className="container col-2 AlignCenter">
-        <hr />
+      <div className="container col-3 AlignCenter">
+        <h1>Create new Car</h1>
+        {errorMsg === "" ? null : <h3 className="errorMessage">{errorMsg}</h3>}
         <form className="marginBottom60" onSubmit={onCreate}>
           <label>Model</label>
           <br />

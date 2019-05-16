@@ -80,9 +80,9 @@ class EditCarForm extends Component {
     console.log(modelName);
 
     return (
-      <div className="container col-2 AlignCenter">
-        <hr />
-        <form className="marginBottom60" onSubmit={this.handleSubmit}>
+      <div className="container col-3 AlignCenter">
+        <h1>Edit {modelName}</h1>
+        <form className="marginBottom30" onSubmit={this.handleSubmit}>
           <label>Model</label>
           <br />
           <input
@@ -93,7 +93,7 @@ class EditCarForm extends Component {
             placeholder="Car-model"
             required
           />
-          <hr />
+          <hr className="col-6" />
           <label>Brand</label>
           <br />
           <select onChange={this.handleChange}>

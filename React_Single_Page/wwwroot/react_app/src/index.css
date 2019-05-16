@@ -6,6 +6,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#myBody {
   background-color: darkslategrey;
   color: white;
 }
@@ -13,4 +16,13 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.navBarButtons:hover {
+  cursor: pointer;
+  box-shadow: 10;
+}
+
+.navBarButtons {
+  padding: 10px 16px;
 }

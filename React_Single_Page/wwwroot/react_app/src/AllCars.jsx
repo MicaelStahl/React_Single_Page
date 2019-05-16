@@ -24,7 +24,7 @@ const AllCarsTableList = props => {
           Details
         </button>
         <button
-          onClick={() => onDelete(car.id)}
+          onClick={() => onDelete(car)}
           className="btn btn-danger btn-sm m-1"
         >
           Delete

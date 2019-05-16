@@ -1,5 +1,7 @@
 import React, { Component } from "react";
+import "../App.css";
 import "./site.css";
+import "bootstrap";
 
 class DeleteCarConfirm extends Component {
   state = {
@@ -7,19 +9,54 @@ class DeleteCarConfirm extends Component {
     deleteConfirmed: false
   };
   render() {
-    const { modelName, brand, color, productionYear } = this.state.oneCar;
+    const { id, modelName, brand, color, productionYear } = this.state.oneCar;
+
+    console.log(id);
+    const { onDeleteConfirm, onReturn } = this.props;
     return (
-      <div classname="container AlignCenter marginBottom60">
-        <p>Are you sure you want to remove {modelName}?</p>
-        <p>
-          <strong>This action can NOT be reverted.</strong>
-        </p>
-        <table>
-          <tr>
-            <td>sd</td>
-          </tr>
+      <React.Fragment>
+        <div className="App marginBottom30">
+          <h3 className="errorMessage">
+            Are you sure you want to remove {modelName}?
+          </h3>
+          <p className="errorMessage">
+            <strong>
+              This action can <ins>NOT</ins> be reverted.
+            </strong>
+          </p>
+          <div>
+            <button
+              onClick={() => onDeleteConfirm(id)}
+              className="btn btn-danger btn-sm marginBottom5"
+            >
+              Remove
+            </button>
+          </div>
+          <div>
+            <button className="btn btn-primary btn-sm" onClick={onReturn}>
+              Return
+            </button>
+          </div>
+        </div>
+        <table className="table table-active AlignCenter marginBottom30 col-4">
+          <thead>
+            <tr className="col-4">
+              <th>model</th>
+              <th>brand</th>
+              <th>color</th>
+              <th>productionYear</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className=" col-4">
+              <td>{modelName}</td>
+              <td>{brand}</td>
+              <td>{color}</td>
+              <td>{productionYear}</td>
+            </tr>
+          </tbody>
         </table>
-      </div>
+      </React.Fragment>
     );
   }
 }

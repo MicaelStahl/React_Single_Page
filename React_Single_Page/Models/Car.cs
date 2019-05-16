@@ -31,5 +31,4 @@ namespace React_Single_Page.Models
         [Range(1900, 2020, ErrorMessage = "The production year must be between year 1900 and 2020")]
         public int ProductionYear { get; set; }
     }
-
 }

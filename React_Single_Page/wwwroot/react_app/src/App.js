@@ -3,6 +3,8 @@ import "./App.css";
 import axios from "axios";
 import AllCars from "./AllCars";
 import "./Components/site.css";
+import "react-bootstrap";
+import $ from "jquery";
 import CreateCarForm from "./Components/CreateCarForm";
 import DetailsCarTable from "./Components/DetailsCarTable";
 import EditCarForm from "./Components/EditCarForm";
@@ -14,12 +16,14 @@ const url = "http://localhost:50291/api/CarAPI/";
 class App extends Component {
   state = {
     cars: [],
+    screenWidth: null,
     createCar: false,
     detailsCar: false,
     editCar: false,
     deleteCar: false,
     ascending: true,
     descending: false,
+    errorMsg: "",
     sortCars: "",
     oneCar: [],
     brands: [],
@@ -54,27 +58,38 @@ class App extends Component {
     event.preventDefault();
     console.log("handleCreateComplete called");
     const target = event.target;
+    console.log(this.state.brand);
+    if (this.state.brand === "" || this.state.brand === undefined) {
+      let { errorMsg } = this.state;
+      this.setState({ errorMsg: "You need to pick a brand for the car." });
+      return errorMsg;
+    } else {
+      const car = {
+        ModelName: target.modelName.value,
+        Brand: this.state.brand,
+        Color: target.color.value,
+        ProductionYear: target.productionYear.value
+      };
 
-    const car = {
-      ModelName: target.modelName.value,
-      Brand: this.state.brand,
-      Color: target.color.value,
-      ProductionYear: target.productionYear.value
-    };
-
-    axios
-      .post(url, car)
-      .then(response => {
-        this.setState({ cars: response.data, createCar: false });
-      })
-      .catch(status => {
-        alert(status);
-      });
+      // In the future maybe returning 1 car and then using push to main list
+      // Would be more efficient instead of returning the entire list?
+      axios
+        .post(url, car)
+        .then(response => {
+          this.setState({ cars: response.data, createCar: false });
+        })
+        .catch(status => {
+          alert(status);
+        });
+    }
   };
 
   handleDetails = car => {
     console.log("handleDetails called");
-    this.setState({ oneCar: car, detailsCar: true });
+    this.setState({
+      oneCar: car,
+      detailsCar: true
+    });
   };
 
   handleEdit = car => {
@@ -83,10 +98,10 @@ class App extends Component {
     this.setState({ oneCar: car, editCar: true, detailsCar: false });
   };
 
-  handleDelete = () => {
+  handleDelete = car => {
     console.log("handleDelete called");
 
-    this.setState({ deleteCar: true });
+    this.setState({ deleteCar: true, oneCar: car });
   };
 
   // If I want to make a "failsafe" for delete,
@@ -96,11 +111,12 @@ class App extends Component {
     axios
       .delete(url + id)
       .then(response => {
+        console.log(response);
         let detailsCar = this.state;
         detailsCar = false;
 
         const cars = this.state.cars.filter(x => x.id !== id);
-        this.setState({ cars, detailsCar, deleteCar: false });
+        this.setState({ cars, detailsCar, oneCar: "", deleteCar: false });
       })
       .catch(error => {
         console.log(error);
@@ -110,14 +126,7 @@ class App extends Component {
 
   handleSort = event => {
     console.log("handleSort called");
-    // let { ascending, descending } = this.state;
 
-    // if (ascending === true) {
-    //   this.setState({ ascending: false, descending: false });
-    // } else if (ascending === false) {
-    //   this.setState({ ascending: true, descending: true });
-    // }
-    // console.log(ascending + " + " + descending);
     this.setState({ sortCars: [event] });
   };
 
@@ -131,6 +140,7 @@ class App extends Component {
         ascending: true,
         descending: false,
         deleteCar: false,
+        errorMsg: "",
         oneCar: [],
         brand: "",
         sortCars: ""
@@ -138,7 +148,19 @@ class App extends Component {
     });
   };
 
+  updateWindowsDimensions = () => {
+    this.setState({ screenWidth: window.innerWidth });
+  };
+
+  // Checks the width of the page before loading.
+  componentWillMount() {
+    this.updateWindowsDimensions();
+  }
+
+  // Fetches the cars and brands from backend if the page loaded correctly
+  // Also checks the width of the screen via a EventListener.
   componentDidMount() {
+    $("#createCar").on("click", this.handleCreate);
     axios
       .get(url, { "Content-Type": "application/json" })
       .then(response => {
@@ -147,9 +169,20 @@ class App extends Component {
       .catch(status => {
         console.log(status);
       });
-    axios.get("http://localhost:50291/api/CarAPI/GetBrands").then(response => {
-      this.setState({ brands: response.data });
-    });
+    axios
+      .get("http://localhost:50291/api/CarAPI/GetBrands")
+      .then(response => {
+        this.setState({ brands: response.data });
+      })
+      .catch(status => {
+        console.log(status);
+      });
+    window.addEventListener("resize", this.updateWindowsDimensions);
+  }
+
+  // This removes the EventListener that checks the screensize.
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateWindowsDimensions);
   }
 
   render() {
@@ -162,8 +195,11 @@ class App extends Component {
       editCar,
       descending,
       sortCars,
+      errorMsg,
       deleteCar
     } = this.state;
+
+    let { screenWidth } = this.state;
 
     let allCarsStyling = {
       center: "AlignCenter",
@@ -181,75 +217,77 @@ class App extends Component {
             onChange={this.handleBrand}
             onCreate={this.handleCreateComplete}
             onReturn={this.handleReturn}
+            errorMsg={errorMsg}
             brands={brands}
           />
         );
       }
       if (detailsCar === true) {
-        if (window.innerWidth > 1100) {
+        if (screenWidth > 1100) {
           allCarsStyling = {
-            // float: "floatLeft",
             AlignCenter: "",
             marginBottom: "marginBottom60"
           };
 
           const detailsStyling = {
-            // float: "floatRight",
             AlignCenter: "",
             marginBottom: "marginBottom60"
           };
 
           return (
-            <div className="row resetRow">
-              <div className="offset-1 col-5">
-                <h1 className="marginBottom30">All Cars!</h1>
-                <AllCars
-                  allCarsStyling={allCarsStyling}
-                  carData={cars}
-                  onEdit={this.handleEdit}
-                  onDetails={this.handleDetails}
-                  onDelete={this.handleDeleteConfirm}
-                  onSort={this.handleSort}
-                />
-              </div>
-              <div className="col-5 marginLeft30">
-                <h1 className="marginBottom30">
-                  Details of {oneCar.modelName}
-                </h1>
-                <DetailsCarTable
-                  detailsStyling={detailsStyling}
-                  oneCar={oneCar}
-                  onEdit={this.handleEdit}
-                  onDelete={this.handleDeleteConfirm}
-                  onReturn={this.handleReturn}
-                />
-              </div>
-              <div className="AlignCenter clearFloats">
-                <button
-                  className="btn btn-primary btn-sm marginBottom5"
-                  onClick={this.handleCreate}
-                >
-                  Create Car
-                </button>
-                <button
-                  className="btn btn-primary btn-sm offset-1"
-                  onClick={this.handleReturn}
-                >
-                  Return
-                </button>
+            <div className="container">
+              <div className="row resetRow">
+                <div className="col-6">
+                  <h1 className="marginBottom30">All Cars!</h1>
+
+                  <AllCars
+                    allCarsStyling={allCarsStyling}
+                    carData={cars}
+                    onEdit={this.handleEdit}
+                    onDetails={this.handleDetails}
+                    onDelete={this.handleDelete}
+                    onSort={this.handleSort}
+                  />
+                </div>
+                <div className="offset-1 col-5">
+                  <h1 className="marginBottom30">
+                    Details of {oneCar.modelName}
+                  </h1>
+                  <DetailsCarTable
+                    detailsStyling={detailsStyling}
+                    oneCar={oneCar}
+                    onEdit={this.handleEdit}
+                    onDelete={this.handleDelete}
+                    onReturn={this.handleReturn}
+                  />
+                </div>
+                <div className="AlignCenter clearFloats">
+                  <button
+                    className="btn btn-primary btn-sm marginBottom5"
+                    onClick={this.handleCreate}
+                  >
+                    Create Car
+                  </button>
+                  <button
+                    className="btn btn-primary btn-sm offset-1"
+                    onClick={this.handleReturn}
+                  >
+                    Return
+                  </button>
+                </div>
               </div>
             </div>
           );
         }
         return (
-          <div>
+          <div className="App">
             <h1>Details of {oneCar.modelName}</h1>
             <hr className="col-6" />
             <DetailsCarTable
               detailsStyling={detailsStyling}
               oneCar={oneCar}
               onEdit={this.handleEdit}
-              onDelete={this.handleDeleteConfirm}
+              onDelete={this.handleDelete}
             />
             <button
               className="btn btn-primary btn-sm"
@@ -279,7 +317,7 @@ class App extends Component {
             <DeleteCarConfirm
               oneCar={oneCar}
               onReturn={this.handleReturn}
-              handleDeleteConfirm={this.handleDeleteConfirm}
+              onDeleteConfirm={this.handleDeleteConfirm}
             />
           </div>
         );
@@ -293,7 +331,7 @@ class App extends Component {
               cars={cars}
               onEdit={this.handleEdit}
               onDetails={this.handleDetails}
-              onDelete={this.handleDeleteConfirm}
+              onDelete={this.handleDelete}
               onSort={this.handleSort}
               sortCars={sortCars}
               descending={descending}
@@ -324,7 +362,7 @@ class App extends Component {
             carData={cars}
             onEdit={this.handleEdit}
             onDetails={this.handleDetails}
-            onDelete={this.handleDeleteConfirm}
+            onDelete={this.handleDelete}
             onSort={this.handleSort}
           />
           <button
