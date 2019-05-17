@@ -2,11 +2,8 @@ import React from "react";
 import "./site.css";
 
 const CreateCarForm = props => {
-  //   const year = new Date().getFullYear();
-  // If I want to use the line above, then I have to include a handleChange method.
   const { brands, onCreate, onChange, onReturn, errorMsg } = props;
 
-  console.log(errorMsg);
   if (brands.length > 0) {
     return (
       <div className="container col-3 AlignCenter">
@@ -42,7 +39,6 @@ const CreateCarForm = props => {
           <input
             name="productionYear"
             type="datetime"
-            // value={year}
             placeholder="Production-Year"
             required
           />

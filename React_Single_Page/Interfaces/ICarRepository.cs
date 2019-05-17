@@ -1,15 +1,12 @@
 ﻿using React_Single_Page.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace React_Single_Page.Interfaces
 {
     public interface ICarRepository
     {
         // (C)RUD
-        bool CreateCar(Car car);
+        Car CreateCar(Car car);
 
         // C(R)UD
         Car FindCar(int? id);

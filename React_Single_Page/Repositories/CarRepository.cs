@@ -1,11 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using React_Single_Page.Database;
+﻿using React_Single_Page.Database;
 using React_Single_Page.Interfaces;
 using React_Single_Page.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace React_Single_Page.Repositories
 {
@@ -26,11 +24,9 @@ namespace React_Single_Page.Repositories
                 .ToList();
 
             return cars;
-
-            //return _db.Cars.Where(x => x.Id == x.Id).ToList();
         }
 
-        public bool CreateCar(Car car)
+        public Car CreateCar(Car car)
         {
             if (!string.IsNullOrWhiteSpace(car.ModelName) ||
                 !string.IsNullOrWhiteSpace(car.Brand) ||
@@ -51,10 +47,10 @@ namespace React_Single_Page.Repositories
 
                     _db.SaveChanges();
 
-                    return true;
+                    return newCar;
                 }
             }
-            return false;
+            return null;
         }
 
         public bool DeleteCar(int? id)

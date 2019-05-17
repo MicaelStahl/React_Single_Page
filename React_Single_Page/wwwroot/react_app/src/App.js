@@ -23,18 +23,13 @@ class App extends Component {
     deleteCar: false,
     ascending: true,
     descending: false,
+    successMsg: "",
     errorMsg: "",
     sortCars: "",
     oneCar: [],
     brands: [],
+    brandList: [],
     brand: ""
-  };
-
-  //This one should be it's own individual button.
-  handleCreate = () => {
-    console.log("handleCreate called");
-
-    this.setState({ createCar: true });
   };
 
   handleChange = event => {
@@ -44,8 +39,7 @@ class App extends Component {
     this.setState({ [name]: value });
   };
 
-  // This one is specifically for brand while creating.
-  // Can't get it to work with handleChange. :(
+  // This one is specifically for brand while creating / Editing.
   handleBrand = event => {
     const { value } = event.target;
     console.log("handleBrand called");
@@ -53,15 +47,31 @@ class App extends Component {
     this.setState({ brand: value });
   };
 
+  // First part of Create. Enables createCar so the form can be seen.
+  handleCreate = () => {
+    console.log("handleCreate called");
+
+    this.setState({ createCar: true });
+  };
+
   // This is the "post" version of Create.
+  // Also disables createCar so the form cannot be seen anymore.
   handleCreateComplete = event => {
     event.preventDefault();
+
     console.log("handleCreateComplete called");
+
     const target = event.target;
-    console.log(this.state.brand);
-    if (this.state.brand === "" || this.state.brand === undefined) {
+
+    // Checks if the user forgot to choose a brand.
+    if (
+      this.state.brand === "" ||
+      this.state.brand === undefined ||
+      this.state.brand === "Select one"
+    ) {
       let { errorMsg } = this.state;
       this.setState({ errorMsg: "You need to pick a brand for the car." });
+
       return errorMsg;
     } else {
       const car = {
@@ -71,12 +81,19 @@ class App extends Component {
         ProductionYear: target.productionYear.value
       };
 
-      // In the future maybe returning 1 car and then using push to main list
-      // Would be more efficient instead of returning the entire list?
       axios
         .post(url, car)
         .then(response => {
-          this.setState({ cars: response.data, createCar: false });
+          const car = response.data;
+          const carList = this.state.cars;
+
+          carList.push(car);
+
+          this.setState({
+            cars: carList,
+            createCar: false,
+            successMsg: "Your car was successfully created! Hurray!"
+          });
         })
         .catch(status => {
           alert(status);
@@ -88,14 +105,71 @@ class App extends Component {
     console.log("handleDetails called");
     this.setState({
       oneCar: car,
-      detailsCar: true
+      detailsCar: true,
+      successMsg: "Your car was successfully viewed!"
     });
   };
 
   handleEdit = car => {
+    axios
+      .get("http://localhost:50291/api/CarAPI/GetBrands")
+      .then(response => {
+        this.setState({ brands: response.data });
+      })
+      .catch(status => {
+        console.log(status);
+      });
+
     console.log("handleEdit called");
 
-    this.setState({ oneCar: car, editCar: true, detailsCar: false });
+    const { brands } = this.state;
+
+    let splicedBrands = brands;
+
+    let index = splicedBrands.indexOf(car.brand);
+
+    splicedBrands.splice(index, 1);
+
+    this.setState({
+      oneCar: car,
+      brand: car.brand,
+      brandList: splicedBrands,
+      editCar: true,
+      detailsCar: false,
+      successMsg: "Your car was successfully edited! Hurray!"
+    });
+  };
+
+  handleEditSubmit = event => {
+    event.preventDefault();
+    console.log("handleEditSubmit called");
+    const { modelName, brand, color, productionYear } = event.target;
+    const { oneCar, cars, brands } = this.state;
+    const id = event.target.id.value;
+
+    const car = {
+      ModelName: modelName.value,
+      Brand: this.state.brand === undefined ? brand : oneCar.brand,
+      Color: color.value,
+      ProductionYear: productionYear.value
+    };
+
+    axios.put(url + id, car).then(response => {
+      if (response.data !== null || response.data.length !== 0) {
+        const index = cars.findIndex(x => x.id === response.data.id);
+
+        const carList = this.state.cars;
+
+        carList.splice(index, 1, response.data);
+
+        this.setState({
+          cars: carList,
+          brands: brands,
+          editCar: false,
+          successMsg: "Your car was successfully updated!"
+        });
+      }
+    });
   };
 
   handleDelete = car => {
@@ -104,19 +178,22 @@ class App extends Component {
     this.setState({ deleteCar: true, oneCar: car });
   };
 
-  // If I want to make a "failsafe" for delete,
-  // then make this into a different page instead.
   handleDeleteConfirm = id => {
     console.log("handleDeleteConfirm called");
     axios
       .delete(url + id)
       .then(response => {
-        console.log(response);
         let detailsCar = this.state;
         detailsCar = false;
 
         const cars = this.state.cars.filter(x => x.id !== id);
-        this.setState({ cars, detailsCar, oneCar: "", deleteCar: false });
+        this.setState({
+          cars,
+          detailsCar,
+          oneCar: "",
+          deleteCar: false,
+          successMsg: "Your car was successfully deleted. *sniff*"
+        });
       })
       .catch(error => {
         console.log(error);
@@ -140,12 +217,21 @@ class App extends Component {
         ascending: true,
         descending: false,
         deleteCar: false,
+        successMsg: "",
         errorMsg: "",
         oneCar: [],
         brand: "",
         sortCars: ""
       });
     });
+    axios
+      .get("http://localhost:50291/api/CarAPI/GetBrands")
+      .then(response => {
+        this.setState({ brands: response.data });
+      })
+      .catch(status => {
+        console.log(status);
+      });
   };
 
   updateWindowsDimensions = () => {
@@ -161,6 +247,7 @@ class App extends Component {
   // Also checks the width of the screen via a EventListener.
   componentDidMount() {
     $("#createCar").on("click", this.handleCreate);
+    $("#funny-llama").on("click", this.handleReturn);
     axios
       .get(url, { "Content-Type": "application/json" })
       .then(response => {
@@ -189,14 +276,17 @@ class App extends Component {
     const {
       cars,
       brands,
+      brandList,
       createCar,
       oneCar,
       detailsCar,
       editCar,
       descending,
       sortCars,
+      successMsg,
       errorMsg,
-      deleteCar
+      deleteCar,
+      brand
     } = this.state;
 
     let { screenWidth } = this.state;
@@ -237,7 +327,7 @@ class App extends Component {
           return (
             <div className="container">
               <div className="row resetRow">
-                <div className="col-6">
+                <div className="col-7">
                   <h1 className="marginBottom30">All Cars!</h1>
 
                   <AllCars
@@ -249,10 +339,15 @@ class App extends Component {
                     onSort={this.handleSort}
                   />
                 </div>
-                <div className="offset-1 col-5">
+                <div className="col-5">
                   <h1 className="marginBottom30">
                     Details of {oneCar.modelName}
                   </h1>
+                  {successMsg === "" ? null : (
+                    <h3 className="successMsgGray marginBottom30">
+                      {successMsg}
+                    </h3>
+                  )}
                   <DetailsCarTable
                     detailsStyling={detailsStyling}
                     oneCar={oneCar}
@@ -303,8 +398,10 @@ class App extends Component {
           <div>
             <EditCarForm
               oneCar={oneCar}
-              brands={brands}
-              onCreate={this.handleCreateComplete}
+              currentBrand={brand}
+              brands={brandList}
+              onEditSubmit={this.handleEditSubmit}
+              onEditBrand={this.handleBrand}
               onReturn={this.handleReturn}
             />
           </div>
@@ -313,7 +410,7 @@ class App extends Component {
 
       if (deleteCar === true) {
         return (
-          <div classname="App">
+          <div className="App">
             <DeleteCarConfirm
               oneCar={oneCar}
               onReturn={this.handleReturn}
@@ -357,6 +454,9 @@ class App extends Component {
       return (
         <div className="App">
           <h1>All Cars!</h1>
+          {successMsg === "" ? null : (
+            <h3 className="successMsgGray">{successMsg}</h3>
+          )}
           <AllCars
             allCarsStyling={allCarsStyling}
             carData={cars}

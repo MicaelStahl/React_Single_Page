@@ -1,23 +1,21 @@
 import React, { Component } from "react";
-import axios from "axios";
-import App from "../App";
-
-const url = "http://localhost:50291/api/CarAPI/";
 
 class EditCarForm extends Component {
   constructor(props) {
     super(props);
 
-    const { oneCar } = this.props;
+    const { oneCar, brands } = this.props;
+    const { id, modelName, brand, color, productionYear } = oneCar;
 
     this.state = {
       oneCar: oneCar,
-      editComplete: false,
-
-      modelName: oneCar.modelName,
-      brand: oneCar.brand,
-      color: oneCar.color,
-      productionYear: oneCar.productionYear
+      brands: brands,
+      brandList: [],
+      id: id,
+      modelName: modelName,
+      brand: brand,
+      color: color,
+      productionYear: productionYear
     };
   }
 
@@ -31,58 +29,16 @@ class EditCarForm extends Component {
     });
   };
 
-  handleSubmit = event => {
-    event.preventDefault();
-    console.log("handleSubmit - EditCarForm called");
-
-    const { modelName, brand, color, productionYear, oneCar } = this.state;
-
-    const car = {
-      ModelName: modelName,
-      Brand: brand,
-      Color: color,
-      ProductionYear: productionYear
-    };
-    console.log(car);
-    axios
-      .put(url + oneCar.id, car, { "Content-Type": "application/json" })
-      .then(response => {
-        this.setState({ editComplete: true });
-      })
-      .catch(error => {
-        if (error.response) {
-          console.log(
-            "There was an error reaching the server. Please try again."
-          );
-        } else if (error.request) {
-          console.log("The request was invalid. Please try again.");
-        } else {
-          console.log("Something went wrong - " + error);
-        }
-      });
-  };
-
-  //Continue here.
   render() {
-    const { brands, onReturn } = this.props;
-    const {
-      modelName,
-      color,
-      brand,
-      productionYear,
-      editComplete
-    } = this.state;
+    const { onReturn, onEditSubmit, onEditBrand } = this.props;
 
-    if (editComplete === true) {
-      return <App />;
-    }
-
-    console.log(modelName);
+    const { id, modelName, color, brand, productionYear, brands } = this.state;
 
     return (
       <div className="container col-3 AlignCenter">
         <h1>Edit {modelName}</h1>
-        <form className="marginBottom30" onSubmit={this.handleSubmit}>
+        <form className="marginBottom30" onSubmit={onEditSubmit}>
+          <input type="hidden" name="id" value={id} />
           <label>Model</label>
           <br />
           <input
@@ -96,8 +52,10 @@ class EditCarForm extends Component {
           <hr className="col-6" />
           <label>Brand</label>
           <br />
-          <select onChange={this.handleChange}>
-            <option value={brand}>{brand}</option>
+          <select onChange={onEditBrand}>
+            <option name="brand" value={brand}>
+              {brand}
+            </option>
             {brands.map((brand, index) => (
               <option name="brand" key={index}>
                 {brand}

@@ -37,8 +37,7 @@ const AllCarsTableList = props => {
 };
 
 const AllCarsTableName = props => {
-  const { onSort, carData } = props;
-  const { productionYear } = carData;
+  const { onSort } = props;
   return (
     <thead>
       <tr className="col-12">
@@ -77,8 +76,6 @@ export default class Cars extends Component {
 
     const { center, marginBottom, float } = allCarsStyling;
     let style = center + " " + marginBottom + " " + float;
-
-    console.log(center);
 
     return (
       <table className={style}>

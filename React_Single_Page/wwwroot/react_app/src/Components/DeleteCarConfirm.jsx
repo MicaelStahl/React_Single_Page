@@ -11,7 +11,6 @@ class DeleteCarConfirm extends Component {
   render() {
     const { id, modelName, brand, color, productionYear } = this.state.oneCar;
 
-    console.log(id);
     const { onDeleteConfirm, onReturn } = this.props;
     return (
       <React.Fragment>
@@ -38,9 +37,9 @@ class DeleteCarConfirm extends Component {
             </button>
           </div>
         </div>
-        <table className="table table-active AlignCenter marginBottom30 col-4">
+        <table className="table-active table-striped AlignCenter marginBottom30 col-4">
           <thead>
-            <tr className="col-4">
+            <tr className="col-6">
               <th>model</th>
               <th>brand</th>
               <th>color</th>
@@ -48,7 +47,7 @@ class DeleteCarConfirm extends Component {
             </tr>
           </thead>
           <tbody>
-            <tr className=" col-4">
+            <tr className=" col-6">
               <td>{modelName}</td>
               <td>{brand}</td>
               <td>{color}</td>

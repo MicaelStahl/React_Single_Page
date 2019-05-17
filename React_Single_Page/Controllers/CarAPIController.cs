@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using React_Single_Page.Database;
 using React_Single_Page.Interfaces;
 using React_Single_Page.Models;
-using React_Single_Page.ViewModels;
 
 namespace React_Single_Page.Controllers
 {
@@ -56,15 +51,15 @@ namespace React_Single_Page.Controllers
 
         // POST: api/CarAPI
         [HttpPost]
-        public List<Car> Post(Car car)
+        public Car Post(Car car)
         {
             if (ModelState.IsValid)
             {
-                var boolean = _car.CreateCar(car);
+                var newCar = _car.CreateCar(car);
 
-                if (boolean)
+                if (newCar != null)
                 {
-                    return _db.Cars.ToList();
+                    return newCar;
                 }
             }
             return null;
@@ -97,11 +92,6 @@ namespace React_Single_Page.Controllers
         {
             if (id != null || id != 0)
             {
-                var car = _db.Cars.SingleOrDefault(x => x.Id == id);
-
-                _db.Cars.Remove(car);
-                _db.SaveChanges();
-
                 _car.DeleteCar(id);
             }
         }
