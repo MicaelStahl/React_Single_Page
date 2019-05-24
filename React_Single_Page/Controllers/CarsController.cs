@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using React_Single_Page.Interfaces;
 using React_Single_Page.Models;
+using System.Threading.Tasks;
 
 namespace React_Single_Page.Controllers
 {
@@ -28,20 +29,20 @@ namespace React_Single_Page.Controllers
         {
             return View();
         }
-        //[HttpPost]
-        //public IActionResult Create(Car car)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var newCar = _car.CreateCar(car);
+        [HttpPost]
+        public IActionResult Create(Car car)
+        {
+            if (ModelState.IsValid)
+            {
+                var newCar = _car.CreateCar(car);
 
-        //        if (newCar != null)
-        //        {
-        //            return RedirectToAction(nameof(Details), "Cars", new { id = newCar.Id });
-        //        }
-        //    }
-        //    return BadRequest();
-        //}
+                if (newCar != null)
+                {
+                    return RedirectToAction(nameof(Details), "Cars", new { id = newCar.Id });
+                }
+            }
+            return BadRequest(ModelState);
+        }
 
         public IActionResult Details(int? id)
         {
@@ -86,7 +87,7 @@ namespace React_Single_Page.Controllers
                 }
                 return NotFound();
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
         
         [HttpGet]

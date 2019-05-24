@@ -6,7 +6,7 @@ namespace React_Single_Page.Interfaces
     public interface ICarRepository
     {
         // (C)RUD
-        Car CreateCar(Car car);
+         Car CreateCar(Car car);
 
         // C(R)UD
         Car FindCar(int? id);
@@ -14,7 +14,6 @@ namespace React_Single_Page.Interfaces
 
         // CR(U)D
         Car EditCar(Car car);
-        Car SortCarBy(string sortBy);
 
         //CRU(D)
         bool DeleteCar(int? id);

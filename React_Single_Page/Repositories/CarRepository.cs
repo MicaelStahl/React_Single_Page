@@ -28,27 +28,29 @@ namespace React_Single_Page.Repositories
 
         public Car CreateCar(Car car)
         {
-            if (!string.IsNullOrWhiteSpace(car.ModelName) ||
-                !string.IsNullOrWhiteSpace(car.Brand) ||
-                !string.IsNullOrWhiteSpace(car.Color) ||
-                car.ProductionYear > 1900 || car.ProductionYear <= Year)
+            if (string.IsNullOrWhiteSpace(car.ModelName) ||
+                string.IsNullOrWhiteSpace(car.Brand) ||
+                string.IsNullOrWhiteSpace(car.Color) ||
+                car.ProductionYear < 1900 || car.ProductionYear > Year ||
+                car.Id != 0)
             {
-                var newCar = new Car()
-                {
-                    ModelName = car.ModelName,
-                    Brand = car.Brand,
-                    Color = car.Color,
-                    ProductionYear = car.ProductionYear
-                };
+                return null;
+            }
+            var newCar = new Car()
+            {
+                ModelName = car.ModelName,
+                Brand = car.Brand,
+                Color = car.Color,
+                ProductionYear = car.ProductionYear
+            };
 
-                if (newCar != null)
-                {
-                    _db.Cars.Add(newCar);
+            if (newCar != null)
+            {
+                _db.Cars.Add(newCar);
 
-                    _db.SaveChanges();
+                _db.SaveChanges();
 
-                    return newCar;
-                }
+                return newCar;
             }
             return null;
         }
@@ -73,24 +75,25 @@ namespace React_Single_Page.Repositories
 
         public Car EditCar(Car car)
         {
-            if (!string.IsNullOrWhiteSpace(car.ModelName) ||
-                !string.IsNullOrWhiteSpace(car.Brand) ||
-                !string.IsNullOrWhiteSpace(car.Color) ||
-                car.ProductionYear > 1900 || car.ProductionYear <= Year)
+            if (string.IsNullOrWhiteSpace(car.ModelName) ||
+                string.IsNullOrWhiteSpace(car.Brand) ||
+                string.IsNullOrWhiteSpace(car.Color) ||
+                car.ProductionYear < 1900 || car.ProductionYear > Year)
             {
-                var original = _db.Cars.SingleOrDefault(x => x.Id == car.Id);
+                return null;
+            }
+            var original = _db.Cars.SingleOrDefault(x => x.Id == car.Id);
 
-                if (original != null)
-                {
-                    original.ModelName = car.ModelName;
-                    original.Brand = car.Brand;
-                    original.Color = car.Color;
-                    original.ProductionYear = car.ProductionYear;
+            if (original != null)
+            {
+                original.ModelName = car.ModelName;
+                original.Brand = car.Brand;
+                original.Color = car.Color;
+                original.ProductionYear = car.ProductionYear;
 
-                    _db.SaveChanges();
+                _db.SaveChanges();
 
-                    return original;
-                }
+                return original;
             }
             return null;
         }
@@ -104,20 +107,6 @@ namespace React_Single_Page.Repositories
                 if (car != null)
                 {
                     return car;
-                }
-            }
-            return null;
-        }
-
-        public Car SortCarBy(string sortBy)
-        {
-            if (string.IsNullOrWhiteSpace(sortBy))
-            {
-                if (sortBy.Contains("ModelName"))
-                {
-                    var sortedCars = _db.Cars.ToList();
-
-                    // Work on this later. I don't know how to configure this one.
                 }
             }
             return null;
