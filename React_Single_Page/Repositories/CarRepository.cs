@@ -26,6 +26,17 @@ namespace React_Single_Page.Repositories
             return cars;
         }
 
+        public List<string> AllBrands()
+        {
+            var brandName = new List<string>();
+
+            foreach (var item in _db.Brands)
+            {
+                brandName.Add(item.Name);
+            }
+            return brandName;
+        }
+
         public Car CreateCar(Car car)
         {
             if (string.IsNullOrWhiteSpace(car.ModelName) ||

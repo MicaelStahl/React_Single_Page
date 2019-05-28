@@ -14,35 +14,28 @@ namespace React_Single_Page.Controllers
     public class CarAPIController : ControllerBase
     {
         private readonly ICarRepository _car;
-        private readonly CarDbContext _db;
 
-        public CarAPIController(ICarRepository car, CarDbContext db)
+        public CarAPIController(ICarRepository car)
         {
             _car = car;
-            _db = db;
         }
 
         // GET: api/CarAPI
         [HttpGet]
         public List<Car> Get()
         {
-            var cars = _db.Cars.ToList();
+            var cars = _car.AllCars();
 
             return new List<Car>(cars);
         }
 
         // GET: api/CarAPI/GetBrands
         [HttpGet("{Car}")]
-        public IEnumerable<string> GetBrands()
+        public List<string> GetBrands()
         {
-            var brands = new List<string>();
+            var brands = _car.AllBrands();
 
-            foreach (var item in _db.Brands)
-            {
-                brands.Add(item.Name);
-            }
-
-            if (brands != null)
+            if (brands != null || brands.Count != 0)
             {
                 return brands;
             }
@@ -53,16 +46,17 @@ namespace React_Single_Page.Controllers
         [HttpPost]
         public Car Post(Car car)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var newCar = _car.CreateCar(car);
-
-                if (newCar != null)
-                {
-                    return newCar;
-                }
+                return null;
             }
-            return null;
+            var newCar = _car.CreateCar(car);
+
+            if (newCar == null)
+            {
+                return null;
+            }
+            return newCar;
         }
 
         // PUT: api/CarAPI/5

@@ -12,13 +12,13 @@ using Xunit;
 using Moq;
 using React_Single_Page.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace React_Single_Page_Testing.RepositoryTesting
 {
     public class CarRepositoryTesting
     {
         private readonly Mock<ICarRepository> _service;
-        //private readonly InMemoryDatabase imdb = new InMemoryDatabase();
 
         public CarRepositoryTesting()
         {
@@ -29,9 +29,9 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "AllCars")]
         public void AllCars_CallMethod_ReturnsEmptyList()
         {
-            //var repo = new Mock<ICarRepository>();
+            _service.Setup(x => x.AllCars()).Returns(new List<Car>());
 
-            var result = _service.Setup(x => x.AllCars()) as List<Car>;
+            var result = _service.Object.AllCars();
 
             Assert.Empty(result);
         }
@@ -40,7 +40,6 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "AllCars")]
         public void AllCars_CallMethodWithTwoCarsSubmitted_ReturnsListOfCars()
         {
-            var repo = new Mock<ICarRepository>();
             var carList = new List<Car>()
             {
                 new Car()
@@ -52,13 +51,12 @@ namespace React_Single_Page_Testing.RepositoryTesting
                     ModelName="V70", Brand="Volvo", Color="Silver", ProductionYear=1997
                 }
             };
-            //carList.ForEach(x => test.CreateCar(x));
-            carList.ForEach(x => repo.Setup(y => y.CreateCar(x)));
-            //repo.Setup(x => x.AllCars());
+            carList.ForEach(x => _service.Setup(y => y.CreateCar(x)));
+            _service.Setup(x => x.AllCars()).Returns(carList);
 
-            var result = repo.Setup(x => x.AllCars()).Returns(carList);
+            var result = _service.Object.AllCars();
 
-            //Assert.Equal(2, result);
+            Assert.Equal(2, result.Count);
 
         }
 
@@ -67,10 +65,11 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Create")]
         public void Create_CreateValidCar_ReturnsCreatedCar()
         {
-            //var repo = new Mock<ICarRepository>();
             var car = new Car() { ModelName = "A3", Brand = "Audi", Color = "Red", ProductionYear = 2015 };
+            _service.Setup(x => x.CreateCar(car)).Returns(car);
 
             var result = _service.Object.CreateCar(car);
+
             Assert.NotNull(result);
             Assert.Equal((car.ModelName, car.Brand, car.Color, car.ProductionYear), (result.ModelName, result.Brand, result.Color, result.ProductionYear));
         }
@@ -79,14 +78,14 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Create")]
         public void Create_CreateTwoValidCars_ReturnsListOfTwoCars()
         {
-            //var repo = new Mock<ICarRepository>();
             var carList = new List<Car>()
             {
             new Car() { ModelName = "A3", Brand = "Audi", Color = "Red", ProductionYear = 2015 },
             new Car() {ModelName="A4", Brand="Audi", Color="Black", ProductionYear=2017 }
             };
+            carList.ForEach(x => _service.Setup(y => y.CreateCar(x)));
+            _service.Setup(x => x.AllCars()).Returns(carList);
 
-            carList.ForEach(x => _service.Object.CreateCar(x));
             var result = _service.Object.AllCars();
 
             Assert.Equal(2, result.Count);
@@ -96,8 +95,8 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Create")]
         public void Create_CreateInvalidCar_ReturnsNullValue()
         {
-            //var repo = new Mock<ICarRepository>();
             var car = new Car() { Brand = "Audi", Color = "Red", ProductionYear = 2014 };
+            _service.Setup(x => x.CreateCar(car));
 
             var result = _service.Object.CreateCar(car);
 
@@ -108,8 +107,8 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Create")]
         public void Create_CreateValidCarWithGivenId_ReturnsNullValue()
         {
-            //var repo = new Mock<ICarRepository>();
             var car = new Car() { Id = 1, ModelName = "A3", Brand = "Audi", Color = "Red", ProductionYear = 2015 };
+            _service.Setup(x => x.CreateCar(car));
 
             var result = _service.Object.CreateCar(car);
 
@@ -120,11 +119,11 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Delete")]
         public void Delete_SubmitInvalidId_ReturnsFalseValue()
         {
-            //var repo = new Mock<ICarRepository>();
             // Gets Id = 1
-            var car = new Car() { ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 };
+            var carList = new List<Car>() { new Car() { Id = 1, ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 } };
+            carList.ForEach(x => _service.Setup(y => y.CreateCar(x)));
+            _service.Setup(x => x.AllCars()).Returns(carList);
 
-            _service.Object.CreateCar(car);
             var result = _service.Object.DeleteCar(2);
             var list = _service.Object.AllCars();
 
@@ -136,9 +135,9 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Delete")]
         public void Delete_SubmitNullId_ReturnsFalseValue()
         {
-            var repo = new Mock<ICarRepository>();
+            _service.Setup(x => x.DeleteCar(null));
 
-            var result = repo.Object.DeleteCar(null);
+            var result = _service.Object.DeleteCar(null);
 
             Assert.False(result);
         }
@@ -147,16 +146,14 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Delete")]
         public void Delete_SubmitValidId_ReturnsTrueValue()
         {
-            var repo = new Mock<ICarRepository>();
             // Gets Id = 1
-            var car = new Car() { ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 };
+            var car = new Car() { Id = 1, ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 };
+            _service.Setup(x => x.CreateCar(car));
+            _service.Setup(x => x.DeleteCar(1)).Returns(true);
 
-            repo.Object.CreateCar(car);
-            var result = repo.Object.DeleteCar(1);
-            var carList = repo.Object.AllCars();
+            var result = _service.Object.DeleteCar(1);
 
             Assert.True(result);
-            Assert.Empty(carList);
         }
 
 
@@ -164,12 +161,12 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Edit")]
         public void Edit_SubmitValidUpdate_ReturnsUpdatedCar()
         {
-            var repo = new Mock<ICarRepository>();
-            
-            var newCar = repo.Object.CreateCar(new Car() { ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 });
-            var editCar = new Car() { Id = 1, ModelName = "A4", Brand = "Audi", Color = "Black", ProductionYear = 2019 };
 
-            var updatedCar = repo.Object.EditCar(editCar);
+            _service.Setup(x => x.CreateCar(new Car() { Id = 1, ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 }));
+            var editCar = new Car() { Id = 1, ModelName = "A4", Brand = "Audi", Color = "Black", ProductionYear = 2019 };
+            _service.Setup(x => x.EditCar(editCar)).Returns(editCar);
+
+            var updatedCar = _service.Object.EditCar(editCar);
 
             Assert.Equal("A4", updatedCar.ModelName);
             Assert.Equal("Audi", updatedCar.Brand);
@@ -181,13 +178,14 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Edit")]
         public void Edit_SubmitInvalidData_ReturnsNullValue()
         {
-            var repo = new Mock<ICarRepository>();
             // Gets Id = 1
-            var car = new Car() { ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 };
+            var car = new Car() { Id=1, ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 };
             var editCar = new Car() { Id = 1, ModelName = " ", Brand = "Audi", Color = "Red", ProductionYear = 2018 };
+            _service.Setup(x => x.CreateCar(car));
+            _service.Setup(x => x.EditCar(editCar));
+            _service.Object.CreateCar(car);
 
-            repo.Object.CreateCar(car);
-            var result = repo.Object.EditCar(editCar);
+            var result = _service.Object.EditCar(editCar);
 
             Assert.Null(result);
         }
@@ -196,14 +194,15 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Edit")]
         public void Edit_SubmitInvalidData_EnsureOldDataWasNotChanged()
         {
-            var repo = new Mock<ICarRepository>();
             // Gets Id = 1
-            var car = new Car() { ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 };
+            var car = new Car() { Id=1, ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 };
             var editCar = new Car() { Id = 1, ModelName = " ", Brand = "Audi", Color = "Red", ProductionYear = 2018 };
+            _service.Setup(x => x.CreateCar(car));
+            _service.Setup(x => x.EditCar(editCar));
+            _service.Setup(x => x.FindCar(1)).Returns(car);
 
-            repo.Object.CreateCar(car);
-            var result = repo.Object.EditCar(editCar);
-            var original = repo.Object.FindCar(1);
+            var result = _service.Object.EditCar(editCar);
+            var original = _service.Object.FindCar(1);
 
             Assert.Null(result);
             Assert.Equal(1, original.Id);
@@ -218,16 +217,16 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Find")]
         public void FindCar_SubmitValidId_ReturnsCorrectCar()
         {
-            var repo = new Mock<ICarRepository>();
             var carList = new List<Car>()
             {
-            new Car() { ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 },
-            new Car() { ModelName = "A5", Brand = "Audi", Color = "White", ProductionYear = 2018 },
-            new Car() { ModelName = "V70", Brand = "Volvo", Color = "Silver", ProductionYear = 1997 }
+            new Car() {Id=1, ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 },
+            new Car() {Id=2, ModelName = "A5", Brand = "Audi", Color = "White", ProductionYear = 2018 },
+            new Car() {Id=3, ModelName = "V70", Brand = "Volvo", Color = "Silver", ProductionYear = 1997 }
             };
+            carList.ForEach(x => _service.Setup(y => y.CreateCar(x)));
+            _service.Setup(x => x.FindCar(3)).Returns(carList.SingleOrDefault(z=>z.Id == 3));
 
-            carList.ForEach(x => repo.Object.CreateCar(x));
-            var result = repo.Object.FindCar(3);
+            var result = _service.Object.FindCar(3);
 
             Assert.Equal(3, result.Id);
             Assert.Equal("V70", result.ModelName);
@@ -240,12 +239,12 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Find")]
         public void FindCar_SubmitInvalidId_ReturnsNullValue()
         {
-            var repo = new Mock<ICarRepository>();
             // Gets Id = 1
             var car = new Car() { ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 };
+            _service.Setup(x => x.CreateCar(car));
+            _service.Setup(x => x.FindCar(2));
 
-            repo.Object.CreateCar(car);
-            var result = repo.Object.FindCar(2);
+            var result = _service.Object.FindCar(2);
 
             Assert.Null(result);
         }
@@ -254,35 +253,18 @@ namespace React_Single_Page_Testing.RepositoryTesting
         [Trait("Service", "Find")]
         public void FindCar_SubmitNullId_ReturnsNullValue()
         {
-            var repo = new Mock<ICarRepository>();
             var carList = new List<Car>()
             {
             new Car() { ModelName = "A3", Brand = "Audi", Color = "Black", ProductionYear = 2019 },
             new Car() { ModelName = "A5", Brand = "Audi", Color = "White", ProductionYear = 2018 },
             new Car() { ModelName = "V70", Brand = "Volvo", Color = "Silver", ProductionYear = 1997 }
             };
+            carList.ForEach(x => _service.Setup(y => y.CreateCar(x)));
+            _service.Setup(x => x.FindCar(null));
 
-            carList.ForEach(x => repo.Object.CreateCar(x));
-            var result = repo.Object.FindCar(null);
+            var result = _service.Object.FindCar(null);
 
             Assert.Null(result);
         }
-
-
-        #region GetInMemoryRepository
-        private ICarRepository GetInMemoryRepository()
-        {
-            DbContextOptions<CarDbContext> options;
-            var builder = new DbContextOptionsBuilder<CarDbContext>();
-            builder.UseInMemoryDatabase("CarDbContext");
-            builder.EnableSensitiveDataLogging();
-            options = builder.Options;
-            CarDbContext dbContext = new CarDbContext(options);
-            dbContext.ResetValueGenerators();
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
-            return new CarRepository(dbContext);
-        }
-        #endregion
     }
 }

@@ -15,22 +15,6 @@ namespace React_Single_Page_Testing.ControllersTesting
 {
     public class CarsControllerTesting
     {
-        #region GetInMemoryRepository
-        private ICarRepository GetInMemoryRepository()
-        {
-            DbContextOptions<CarDbContext> options;
-            var builder = new DbContextOptionsBuilder<CarDbContext>();
-            builder.UseInMemoryDatabase("CarDbContext");
-            builder.EnableSensitiveDataLogging();
-            options = builder.Options;
-            CarDbContext dbContext = new CarDbContext(options);
-            dbContext.ResetValueGenerators();
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
-            return new CarRepository(dbContext);
-        }
-        #endregion
-
         private readonly CarsController _controller;
         private readonly Mock<ICarRepository> _service;
 
@@ -94,7 +78,8 @@ namespace React_Single_Page_Testing.ControllersTesting
 
             var result = _controller.Create(car);
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<SerializableError>(badRequestResult.Value);
         }
 
         [Fact]
@@ -222,7 +207,8 @@ namespace React_Single_Page_Testing.ControllersTesting
 
             var result = _controller.Edit(editCar);
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<SerializableError>(badRequestResult.Value);
         }
 
         [Fact]
